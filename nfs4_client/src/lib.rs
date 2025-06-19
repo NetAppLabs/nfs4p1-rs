@@ -486,8 +486,7 @@ impl<TransportT: Transport> Client<TransportT> {
     }
 
     pub fn look_up(&mut self, path: impl AsRef<Path>) -> Result<FileHandle> {
-        Ok(self
-            .do_compound(ReturnSecond(
+        self.do_compound(ReturnSecond(
                 (
                     PutRootFh,
                     Vec::from_iter(path.as_ref().components().filter_map(|c| match c {
@@ -498,8 +497,8 @@ impl<TransportT: Transport> Client<TransportT> {
                     })),
                 ),
                 GetFh,
-            ))?
-            .object)
+            ))
+            .map(|res| res.object)
     }
 
     pub fn read(&mut self, handle: FileHandle, offset: u64, count: u32) -> Result<ReadRes> {
@@ -560,8 +559,7 @@ impl<TransportT: Transport> Client<TransportT> {
     }
 
     pub fn create_file(&mut self, parent: FileHandle, name: &str) -> Result<FileHandle> {
-        Ok(self
-            .do_compound(ReturnSecond(
+        self.do_compound(ReturnSecond(
                 (
                     PutFhArgs { object: parent },
                     OpenArgs {
@@ -579,8 +577,8 @@ impl<TransportT: Transport> Client<TransportT> {
                     },
                 ),
                 GetFh,
-            ))?
-            .object)
+            ))
+            .map(|res| res.object)
     }
 
     pub fn read_dir(
@@ -630,14 +628,13 @@ impl<TransportT: Transport> Client<TransportT> {
     }
 
     pub fn remove(&mut self, handle: FileHandle, entry_name: &str) -> Result<ChangeInfo> {
-        Ok(self
-            .do_compound(ReturnSecond(
+        self.do_compound(ReturnSecond(
                 PutFhArgs { object: handle },
                 RemoveArgs {
                     target: entry_name.into(),
                 },
-            ))?
-            .change_info)
+            ))
+            .map(|res| res.change_info)
     }
 
     pub fn rename(
@@ -666,8 +663,7 @@ impl<TransportT: Transport> Client<TransportT> {
         name: &str,
         attrs: FileAttributes,
     ) -> Result<FileHandle> {
-        Ok(self
-            .do_compound(ReturnSecond(
+        self.do_compound(ReturnSecond(
                 (
                     PutFhArgs { object: parent_dir },
                     CreateArgs {
@@ -677,8 +673,8 @@ impl<TransportT: Transport> Client<TransportT> {
                     },
                 ),
                 GetFh,
-            ))?
-            .object)
+            ))
+            .map(|res| res.object)
     }
 
     pub fn get_max_read_size(&self) -> u64 {
