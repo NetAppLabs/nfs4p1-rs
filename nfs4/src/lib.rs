@@ -111,8 +111,8 @@ pub struct RetentionSet {
 #[derive(SerializeWithDiscriminant, DeserializeWithDiscriminant, PartialEq, Eq, Clone, Debug)]
 #[repr(u32)]
 pub enum SetTime {
-    SetToClientTime(Time) = 0,
-    SetToServerTime = 1,
+    SetToServerTime = 0,
+    SetToClientTime(Time) = 1,
 }
 
 #[derive(SerializeWithDiscriminant, DeserializeWithDiscriminant, PartialEq, Eq, Clone, Debug)]
@@ -179,6 +179,7 @@ pub enum FileAttributeId {
     FilesFree = 22,
     FilesTotal = 23,
     FsLocations = 24,
+    Hidden = 25,
     Homogeneous = 26,
     MaxFileSize = 27,
     MaxLink = 28,
@@ -844,6 +845,7 @@ pub enum FileAttribute {
     FilesFree(u64) = FileAttributeId::FilesFree as u32,
     FilesTotal(u64) = FileAttributeId::FilesTotal as u32,
     FsLocations(FsLocations) = FileAttributeId::FsLocations as u32,
+    Hidden(bool) = FileAttributeId::Hidden as u32,
     Homogeneous(bool) = FileAttributeId::Homogeneous as u32,
     MaxFileSize(u64) = FileAttributeId::MaxFileSize as u32,
     MaxLink(u32) = FileAttributeId::MaxLink as u32,
@@ -926,6 +928,7 @@ impl ToId<FileAttributeId> for FileAttribute {
             Self::FilesFree(..) => FileAttributeId::FilesFree,
             Self::FilesTotal(..) => FileAttributeId::FilesTotal,
             Self::FsLocations(..) => FileAttributeId::FsLocations,
+            Self::Hidden(..) => FileAttributeId::Hidden,
             Self::Homogeneous(..) => FileAttributeId::Homogeneous,
             Self::MaxFileSize(..) => FileAttributeId::MaxFileSize,
             Self::MaxLink(..) => FileAttributeId::MaxLink,
