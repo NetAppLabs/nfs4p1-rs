@@ -8,6 +8,7 @@ use std::collections::VecDeque;
 use std::io;
 use std::path::{Component, Path};
 use sun_rpc_client::{RpcClient, Transport};
+pub use sun_rpc_client::{AuthSysParameters, Gid, OpaqueAuth, Uid};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -378,8 +379,8 @@ pub struct Client<TransportT> {
 }
 
 impl<TransportT: Transport> Client<TransportT> {
-    pub fn new(transport: TransportT) -> Result<Self> {
-        let mut raw_client = ClientWithoutSession::new(RpcClient::new(transport, NFS));
+    pub fn new(transport: TransportT, credential: Option<OpaqueAuth>) -> Result<Self> {
+        let mut raw_client = ClientWithoutSession::new(RpcClient::new(transport, NFS, credential));
 
         let client_owner = random_client_owner();
         let eid_res = raw_client.do_compound(ExchangeIdArgs {

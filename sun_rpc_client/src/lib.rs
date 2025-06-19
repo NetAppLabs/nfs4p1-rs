@@ -4,9 +4,9 @@ use derive_more::From;
 use serde::{de::DeserializeOwned, Serialize};
 use std::{fmt, io};
 use sun_rpc::{
-    AcceptedReplyBody, AuthSysParameters, CallBody, Gid, Message, MessageBody, OpaqueAuth,
-    ReplyBody, Uid, Xid,
+    AcceptedReplyBody, CallBody, Message, MessageBody, ReplyBody, Xid,
 };
+pub use sun_rpc::{AuthSysParameters, Gid, OpaqueAuth, Uid};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -36,14 +36,22 @@ pub struct RpcClient<TransportT> {
     xid: Xid,
     program: u32,
     transport: TransportT,
+    credential: OpaqueAuth,
 }
 
 impl<TransportT: Transport> RpcClient<TransportT> {
-    pub fn new(transport: TransportT, program: u32) -> Self {
+    pub fn new(transport: TransportT, program: u32, credential: Option<OpaqueAuth>) -> Self {
         Self {
             xid: Xid(1),
             program,
             transport,
+            credential: credential.unwrap_or(OpaqueAuth::auth_sys(AuthSysParameters {
+                stamp: 0,
+                machine_name: "test-machine".into(),
+                uid: Uid(0),
+                gid: Gid(0),
+                gids: vec![Gid(0)],
+            })),
         }
     }
 
@@ -55,13 +63,7 @@ impl<TransportT: Transport> RpcClient<TransportT> {
                 program: self.program,
                 version: 4,
                 procedure,
-                credential: OpaqueAuth::auth_sys(AuthSysParameters {
-                    stamp: 0,
-                    machine_name: "test-machine".into(),
-                    uid: Uid(0),
-                    gid: Gid(0),
-                    gids: vec![Gid(0)],
-                }),
+                credential: self.credential.clone(),
                 verifier: OpaqueAuth::none(),
                 call_args,
             }),
@@ -113,7 +115,7 @@ fn ping() {
             .find(|p| p.guest == PORT_MAPPER_PORT)
             .unwrap();
         let transport = std::net::TcpStream::connect(("127.0.0.1", port.host)).unwrap();
-        let mut client = RpcClient::new(transport, PORT_MAPPER);
+        let mut client = RpcClient::new(transport, PORT_MAPPER, None);
 
         client.send_request(NULL_PROCEDURE, ()).unwrap();
 

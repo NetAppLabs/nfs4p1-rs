@@ -15,7 +15,7 @@ fn main() -> Result<()> {
     let opts = Options::parse();
 
     let transport = TcpStream::connect((opts.host, opts.port))?;
-    let mut client = sun_rpc_client::RpcClient::new(transport, sun_rpc_client::PORT_MAPPER);
+    let mut client = sun_rpc_client::RpcClient::new(transport, sun_rpc_client::PORT_MAPPER, None);
     client.send_request(sun_rpc_client::NULL_PROCEDURE, ())?;
     client.receive_reply::<()>()?;
 
