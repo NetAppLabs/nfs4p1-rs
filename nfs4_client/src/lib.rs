@@ -319,6 +319,11 @@ impl<TransportT: Transport> ClientWithoutSession<TransportT> {
         Self { rpc_client }
     }
 
+    fn do_null(&mut self) -> Result<()> {
+        self.rpc_client.send_request(sun_rpc_client::NULL_PROCEDURE, ())?;
+        Ok(self.rpc_client.receive_reply::<()>()?)
+    }
+
     fn do_compound<Args>(&mut self, args: Args) -> Result<Args::Response>
     where
         Args: CompoundRequest,
@@ -460,6 +465,10 @@ impl<TransportT: Transport> Client<TransportT> {
         self.sequence_id.incr();
 
         self.raw_client.do_compound(ReturnSecond(sequence, args))
+    }
+
+    pub fn null(&mut self) -> Result<()> {
+        self.raw_client.do_null()
     }
 
     pub fn get_attr(&mut self, handle: FileHandle) -> Result<GetAttrRes> {
