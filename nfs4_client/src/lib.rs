@@ -129,6 +129,7 @@ macro_rules! compound_op_impl_no_ret {
 }
 
 compound_op_impl! {
+    Access
     Close
     Commit
     Create
@@ -469,6 +470,15 @@ impl<TransportT: Transport> Client<TransportT> {
 
     pub fn null(&mut self) -> Result<()> {
         self.raw_client.do_null()
+    }
+
+    pub fn access(&mut self, handle: FileHandle, access: u32) -> Result<AccessRes> {
+        self.do_compound(ReturnSecond(
+            PutFhArgs { object: handle },
+            AccessArgs {
+                access: Access::from_bits_truncate(access),
+            },
+        ))
     }
 
     pub fn get_attr(&mut self, handle: FileHandle) -> Result<GetAttrRes> {
