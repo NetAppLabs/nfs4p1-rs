@@ -637,6 +637,20 @@ impl<TransportT: Transport> Client<TransportT> {
         Ok(())
     }
 
+    pub fn set_attr_verified(&mut self, handle: FileHandle, attrs: FileAttributes, verif_attrs: FileAttributes) -> Result<()> {
+        self.do_compound(ReturnSecond(
+            (
+                PutFhArgs { object: handle },
+                VerifyArgs { object_attributes: verif_attrs },
+            ),
+            SetAttrArgs {
+                state_id: StateId::anonymous(),
+                object_attributes: attrs,
+            },
+        ))?;
+        Ok(())
+    }
+
     pub fn remove(&mut self, handle: FileHandle, entry_name: &str) -> Result<ChangeInfo> {
         self.do_compound(ReturnSecond(
                 PutFhArgs { object: handle },
