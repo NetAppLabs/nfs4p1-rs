@@ -680,4 +680,12 @@ impl<TransportT: Transport> Client<TransportT> {
             ))?
             .object)
     }
+
+    pub fn get_max_read_size(&self) -> u64 {
+        self.max_read
+    }
+
+    pub fn get_max_write_size(&self) -> u64 {
+        self.max_write
+    }
 }
