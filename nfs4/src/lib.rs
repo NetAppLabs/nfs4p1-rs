@@ -341,6 +341,7 @@ pub struct Time {
 #[cfg(feature = "chrono")]
 impl Time {
     pub fn to_date_time(&self) -> Option<chrono::NaiveDateTime> {
+        #[allow(deprecated)]
         chrono::NaiveDateTime::from_timestamp_opt(self.seconds, self.nseconds)
     }
 }

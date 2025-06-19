@@ -167,6 +167,7 @@ where
     }
 }
 
+#[allow(dead_code)]
 #[derive(Debug, From)]
 pub enum EnumMapDeserializationError {
     UnknownKeyValue(u32),
