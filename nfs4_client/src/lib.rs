@@ -568,7 +568,12 @@ impl<TransportT: Transport> Client<TransportT> {
         Ok(())
     }
 
-    pub fn create_file(&mut self, parent: FileHandle, name: &str) -> Result<FileHandle> {
+    pub fn create_file(
+        &mut self,
+        parent: FileHandle,
+        name: &str,
+        attrs: FileAttributes,
+    ) -> Result<FileHandle> {
         self.do_compound(ReturnSecond(
                 (
                     PutFhArgs { object: parent },
@@ -580,8 +585,8 @@ impl<TransportT: Transport> Client<TransportT> {
                             client_id: self.client_id,
                             opaque: self.client_owner.owner_id.clone(),
                         },
-                        open_how: OpenFlag::OpenCreate(CreateHow::Exclusive {
-                            create_verifier: Verifier(0),
+                        open_how: OpenFlag::OpenCreate(CreateHow::Guarded {
+                            create_attrs: attrs,
                         }),
                         claim: OpenClaim::Null { file: name.into() },
                     },
