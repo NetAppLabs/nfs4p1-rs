@@ -738,6 +738,13 @@ impl<TransportT: Transport> Client<TransportT> {
             .map(|res| res.object)
     }
 
+    pub fn read_link(&mut self, handle: FileHandle) -> Result<ReadLinkRes> {
+        self.do_compound(ReturnSecond(
+            PutFhArgs { object: handle },
+            ReadLink { },
+        ))
+    }
+
     pub fn get_max_read_size(&self) -> u64 {
         self.max_read
     }
