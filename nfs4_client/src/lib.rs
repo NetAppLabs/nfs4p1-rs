@@ -756,6 +756,22 @@ impl<TransportT: Transport> Client<TransportT> {
         ))
     }
 
+    pub fn link(
+        &mut self,
+        src_handle: FileHandle,
+        parent_dir: FileHandle,
+        name: &str,
+    ) -> Result<LinkRes> {
+        self.do_compound(ReturnSecond(
+            (
+                PutFhArgs { object: src_handle },
+                SaveFh,
+                PutFhArgs { object: parent_dir },
+            ),
+            LinkArgs { new_name: name.to_owned() },
+        ))
+    }
+
     pub fn get_max_read_size(&self) -> u64 {
         self.max_read
     }
