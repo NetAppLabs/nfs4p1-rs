@@ -482,6 +482,16 @@ impl<TransportT: Transport> Client<TransportT> {
         ))
     }
 
+    pub fn commit(&mut self, handle: FileHandle, offset: u64, count: u32) -> Result<CommitRes> {
+        self.do_compound(ReturnSecond(
+            PutFhArgs { object: handle },
+            CommitArgs {
+                offset,
+                count,
+            },
+        ))
+    }
+
     pub fn get_attr(&mut self, handle: FileHandle) -> Result<GetAttrRes> {
         let mut supported_attrs = self.supported_attrs.clone();
 
