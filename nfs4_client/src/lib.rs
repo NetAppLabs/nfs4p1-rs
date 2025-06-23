@@ -717,6 +717,27 @@ impl<TransportT: Transport> Client<TransportT> {
             .map(|res| res.object)
     }
 
+    pub fn create_link(
+        &mut self,
+        src_path: &str,
+        parent_dir: FileHandle,
+        name: &str,
+        attrs: FileAttributes,
+    ) -> Result<FileHandle> {
+        self.do_compound(ReturnSecond(
+                (
+                    PutFhArgs { object: parent_dir },
+                    CreateArgs {
+                        object_type: CreateType::Link(src_path.to_string()),
+                        object_name: name.to_owned(),
+                        create_attrs: attrs,
+                    },
+                ),
+                GetFh,
+            ))
+            .map(|res| res.object)
+    }
+
     pub fn get_max_read_size(&self) -> u64 {
         self.max_read
     }
