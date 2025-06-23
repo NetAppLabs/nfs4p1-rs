@@ -506,6 +506,17 @@ impl<TransportT: Transport> Client<TransportT> {
         ))
     }
 
+    pub fn look_up_in(&mut self, dir_handle: FileHandle, path: impl AsRef<Path>) -> Result<FileHandle> {
+        self.do_compound(ReturnSecond(
+                (
+                    PutFhArgs { object: dir_handle },
+                    LookUpArgs { object_name: path.as_ref().as_os_str().to_str().unwrap().into() },
+                ),
+                GetFh,
+            ))
+            .map(|res| res.object)
+    }
+
     pub fn look_up(&mut self, path: impl AsRef<Path>) -> Result<FileHandle> {
         self.do_compound(ReturnSecond(
                 (
