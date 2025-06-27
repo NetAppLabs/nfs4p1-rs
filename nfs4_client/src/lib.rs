@@ -332,7 +332,7 @@ impl<TransportT: Transport> ClientWithoutSession<TransportT> {
     {
         let (arg_array, geometry) = args.into_arg_array();
         let call_args = CompoundArgs {
-            tag: "Test Client".into(),
+            tag: "".into(),
             minor_version: 1,
             arg_array,
         };
@@ -381,6 +381,7 @@ pub struct Client<TransportT> {
 impl<TransportT: Transport> Client<TransportT> {
     pub fn new(transport: TransportT, credential: Option<OpaqueAuth>) -> Result<Self> {
         let mut raw_client = ClientWithoutSession::new(RpcClient::new(transport, NFS, credential));
+        let _ = raw_client.do_null()?;
 
         let client_owner = random_client_owner();
         let eid_res = raw_client.do_compound(ExchangeIdArgs {
