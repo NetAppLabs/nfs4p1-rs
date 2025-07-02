@@ -360,10 +360,10 @@ impl<TransportT: Transport> ClientWithoutSession<TransportT> {
 }
 
 fn random_client_owner() -> ClientOwner {
-    let mut rng = rand::thread_rng();
+    let mut rng = rand::rng();
     ClientOwner {
         verifier: Verifier(0x0),
-        owner_id: rng.gen::<u64>().to_be_bytes().into(),
+        owner_id: rng.random::<u64>().to_be_bytes().into(),
     }
 }
 

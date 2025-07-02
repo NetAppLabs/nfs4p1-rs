@@ -10,7 +10,7 @@ license = "MIT"
 [dependencies]
 derive_more = "^0.99"
 nfs4 = { version = "^0.1", path = "../nfs4" }
-rand = "^0.4"
+rand = "^0.9.1"
 paste = "^1"
 serde-xdr = "^0.6"
 sun_rpc_client = { version = "^0.1", path = "../sun_rpc_client" }
