@@ -1,6 +1,6 @@
 // Copyright Remi Bernotavicius
 
-use nfs4::{FileAttribute, FileAttributeId, FileHandle};
+use nfs4::{FileAttribute, FileAttributes, FileAttributeId, FileHandle};
 use nfs4_client::Client;
 use nfs4_client::NFS_PORT;
 use std::collections::BTreeSet;
@@ -26,7 +26,7 @@ impl<'machine> Fixture<'machine> {
             .find(|p| p.guest == NFS_PORT)
             .unwrap();
         let transport = TcpStream::connect(("127.0.0.1", port.host)).unwrap();
-        let client = Client::new(transport).unwrap();
+        let client = Client::new(transport, None).unwrap();
 
         Self { machine, client }
     }
@@ -70,7 +70,7 @@ impl<'machine> Fixture<'machine> {
 
         let parent = self.client.look_up(path.parent().unwrap()).unwrap();
         self.client
-            .create_file(parent.clone(), path.file_name().unwrap().to_str().unwrap())
+            .create_file(parent.clone(), path.file_name().unwrap().to_str().unwrap(), FileAttributes::default())
             .unwrap()
     }
 
@@ -130,7 +130,7 @@ impl<'machine> Fixture<'machine> {
 
         for i in 0..100 {
             let name = format!("a_file{i}");
-            self.client.create_file(parent.clone(), &name).unwrap();
+            self.client.create_file(parent.clone(), &name, FileAttributes::default()).unwrap();
             expected.insert(name);
         }
 
@@ -167,7 +167,7 @@ impl<'machine> Fixture<'machine> {
             .client
             .create_directory(parent, "foobar", Default::default())
             .unwrap();
-        self.client.create_file(new_dir, "a_file").unwrap();
+        self.client.create_file(new_dir, "a_file", FileAttributes::default()).unwrap();
         self.client.look_up("/files/foobar/a_file").unwrap();
     }
 }

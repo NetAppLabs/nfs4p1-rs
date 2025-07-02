@@ -145,7 +145,7 @@ impl Cli {
         };
 
         let parent = self.client.look_up(parent_dir)?;
-        let handle = self.client.create_file(parent, name.to_str().unwrap())?;
+        let handle = self.client.create_file(parent, name.to_str().unwrap(), FileAttributes::default())?;
 
         let file = std::fs::File::open(local)?;
         let progress = ProgressBar::new(file.metadata()?.len()).with_style(
@@ -160,7 +160,7 @@ fn main() -> Result<()> {
     let opts = Options::parse();
 
     let transport = TcpStream::connect((opts.host, opts.port))?;
-    let client = nfs4_client::Client::new(transport)?;
+    let client = nfs4_client::Client::new(transport, None)?;
 
     let mut cli = Cli { client };
     match opts.command {
